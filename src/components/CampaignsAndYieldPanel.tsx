@@ -444,18 +444,28 @@ export default function CampaignsAndYieldPanel({
     const theme = activeSlot.recommendedTheme;
     if (theme === "WINE_CONNOISSEUR") {
       return {
-        badge: "Enogastronomia & Adega",
-        title: `Noite do Sommelier (${activeSlot.dayLabel} · ${activeSlot.timeSlot})`,
+        badge: "Bourbon, Wine & Blues (SevenRooms Style)",
+        title: `Bourbon Tasting & Blues (${activeSlot.dayLabel} · ${activeSlot.timeSlot})`,
+        emailSubject: `You’re invited! Bourbon Tasting & Blues is back at Five Figs · ${db.venue.name}`,
+        heroHeadline: "Bourbon & Blues",
+        brandLabel: "FIVE FIGS",
+        heroImageUrl:
+          "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=900&q=85",
         defaultIncentive:
-          "Isenção de 100% da rolha na 1ª garrafa + Degustação vertical de Brunello em taça",
+          "Flight de Bourbon Single Barrel & Brunello Riserva + Isenção de 1ª Rolha",
         strategyReason:
-          "Horário com mesas de 4 lugares ociosas. Clientes Wine Lovers têm 89% mais propensão a antecipar o jantar para 18h30–19h30 quando há abertura de safras raras sem custo de rolha.",
+          "Horário com mesas de 4 lugares ociosas. Eventos sensoriais como 'Bourbon Tasting & Blues' ou degustação vertical aumentam em 89% a conversão de clientes de alto LTV em terças e quartas.",
       };
     }
     if (theme === "EXECUTIVE_HOLDING") {
       return {
         badge: "C-Level & Holdings (Wangari)",
         title: `Executive Table & Private Deal (${activeSlot.dayLabel} · ${activeSlot.timeSlot})`,
+        emailSubject: `You’re invited! Private Executive Table & Sommelier Express at Five Figs`,
+        heroHeadline: "Executive Table",
+        brandLabel: "FIVE FIGS",
+        heroImageUrl:
+          "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=900&q=85",
         defaultIncentive:
           "Mesa privativa com acústica reservada + Café Especial & Petit Four cortesia",
         strategyReason:
@@ -466,6 +476,11 @@ export default function CampaignsAndYieldPanel({
       return {
         badge: "Cross-Sell Fashion & Luxury",
         title: `Champagne & Private Styling (${activeSlot.dayLabel} · ${activeSlot.timeSlot})`,
+        emailSubject: `You’re invited! Afternoon Champagne & Trunk Show at Five Figs Jardins`,
+        heroHeadline: "Champagne & Couture",
+        brandLabel: "FIVE FIGS",
+        heroImageUrl:
+          "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=85",
         defaultIncentive:
           "Welcome Glass de Franciacorta Satèn + Gift Card Ateliê Parceiro Jardins",
         strategyReason:
@@ -475,22 +490,32 @@ export default function CampaignsAndYieldPanel({
     if (theme === "CULTURE_VERNISSAGE") {
       return {
         badge: "Cross-Sell Arte & Cultura",
-        title: `Pre-Theatre & Vernissage Menu (${activeSlot.dayLabel} · ${activeSlot.timeSlot})`,
+        title: `Bourbon Tasting, Jazz & Vernissage (${activeSlot.dayLabel} · ${activeSlot.timeSlot})`,
+        emailSubject: `You’re invited! Bourbon Tasting & Blues is back at Five Figs`,
+        heroHeadline: "Bourbon & Blues",
+        brandLabel: "FIVE FIGS",
+        heroImageUrl:
+          "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=900&q=85",
         defaultIncentive:
-          "Menu Harmonizado em 3 tempos (60 min) + Par de convites VIP Galeria / Concerto",
+          "Menu Harmonizado em 3 tempos + Degustação Bourbon Single Barrel & Jazz Live",
         strategyReason:
-          "Aloca as mesas no primeiro giro (18h00–19h30) antes do pico das 20h30, dobrando o giro da mesa (2x Turn) na mesma noite.",
+          "Aloca as mesas no primeiro giro (18h00–19h30) ou Late Night com experiência cultural/musical, dobrando o giro das mesas ociosas.",
       };
     }
     return {
       badge: "Retenção RFV & Win-Back VIP",
-      title: `Win-Back Chef's Table (${activeSlot.dayLabel} · ${activeSlot.timeSlot})`,
+      title: `Bourbon & Chef's Table (${activeSlot.dayLabel} · ${activeSlot.timeSlot})`,
+      emailSubject: `You’re invited! Bourbon Tasting & Blues is back at Five Figs`,
+      heroHeadline: "Bourbon & Blues",
+      brandLabel: "FIVE FIGS",
+      heroImageUrl:
+        "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=900&q=85",
       defaultIncentive:
-        "Prato assinatura favorito no EPOC + Couvert Artesanal e Welcome Drink cortesia",
+        "Prato assinatura favorito no EPOC + Welcome Bourbon Old Fashioned Defumado",
       strategyReason:
         "Recupera clientes de alto LTV que passaram da janela média de retorno, direcionando-os para preencher mesas ociosas.",
     };
-  }, [activeSlot]);
+  }, [activeSlot, db.venue.name]);
 
   // Métricas preditivas da campanha atual
   const campaignMetrics = useMemo(() => {
@@ -1091,23 +1116,153 @@ export default function CampaignsAndYieldPanel({
                 </div>
               </div>
 
-              {/* Preview da Mensagem Personalizada com dados do Top 1 Cliente do Segmento */}
+              {/* MOCKUP IPHONE CONVITE SEVENROOMS ("FIVE FIGS · BOURBON & BLUES · RESERVE MY SEAT") */}
               {targetedEvaluations[0] && (
-                <div className="rounded-xl border border-[#2e323c] bg-[#14161a] p-3">
+                <div className="space-y-3">
                   <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    <span className="flex items-center gap-1 text-[#55b699]">
-                      <MessageSquare className="h-3 w-3" /> Preview Dinâmico (Cliente #{1}:{" "}
-                      {targetedEvaluations[0].guest.name})
+                    <span className="flex items-center gap-1 text-[#7fd3fa]">
+                      <Sparkles className="h-3.5 w-3.5" /> SevenRooms Mobile Invitation Preview
                     </span>
                     <span className="font-mono text-emerald-400">
-                      Propensão {targetedEvaluations[0].propensityScore}%
+                      {targetedEvaluations[0].guest.name} · {targetedEvaluations[0].propensityScore}% Propensão
                     </span>
                   </div>
-                  <div className="mt-2 rounded-lg bg-[#1c2228] p-2.5 font-sans text-xs leading-relaxed text-slate-200 border-l-2 border-[#55b699]">
-                    “Olá <strong>{targetedEvaluations[0].guest.name.split(" ")[0]}</strong>, aqui é o Concierge do <strong>{db.venue.name}</strong>.{" "}
-                    Reservamos com prioridade a sua <strong>Mesa {targetedEvaluations[0].recommendedTable}</strong> para <strong>{activeSlot.dayLabel} às {activeSlot.timeSlot.split(" - ")[0]}</strong>.{" "}
-                    Sabendo da sua preferência por <strong>{targetedEvaluations[0].favoriteEpocItem}</strong>, preparamos para esta janela: <em>{customIncentive.trim() || blueprint.defaultIncentive}</em>.{" "}
-                    Responda <strong>CONFIRMAR</strong> para bloquearmos sua mesa.”
+
+                  {/* Moldura iPhone idêntica à referência enviada */}
+                  <div className="mx-auto max-w-[335px] overflow-hidden rounded-[38px] border-[7px] border-[#262423] bg-white shadow-2xl">
+                    {/* Top Bar iOS Mail (< 24   ^ v) */}
+                    <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 pt-3 pb-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="h-5 w-5 text-[#007aff]"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span className="rounded-full bg-[#007aff] px-2 py-0.5 text-[11px] font-bold leading-none text-white">
+                          24
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-[#007aff]">
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Subject Header */}
+                    <div className="bg-white px-4 py-3 text-left">
+                      <div className="text-[14px] font-bold leading-snug text-[#1c1c1e]">
+                        {customCampaignTitle.trim()
+                          ? `You’re invited! ${customCampaignTitle.trim()} at Five Figs`
+                          : blueprint.emailSubject}
+                      </div>
+                      <div className="mt-1 text-[11px] font-medium text-[#8e8e93]">
+                        {activeSlot.dayLabel} ({activeSlot.dateIso}) · {activeSlot.timeSlot.split(" - ")[0]} · Mesa #{targetedEvaluations[0].recommendedTable}
+                      </div>
+                    </div>
+
+                    {/* Hero Image (Taça Bourbon / Vinho em close-up) */}
+                    <div className="relative h-60 w-full overflow-hidden bg-[#1e1b18]">
+                      <img
+                        src={blueprint.heroImageUrl}
+                        alt={blueprint.heroHeadline}
+                        className="h-full w-full object-cover object-center"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#262322] via-transparent to-black/15" />
+                      <div className="absolute top-2.5 right-2.5 rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold text-amber-300 backdrop-blur-sm border border-amber-400/30">
+                        VIP Match {targetedEvaluations[0].propensityScore}%
+                      </div>
+                    </div>
+
+                    {/* Card Footer Escuro Estilo "FIVE FIGS · Bourbon & Blues · RESERVE MY SEAT" */}
+                    <div className="bg-[#262322] px-5 pt-5 pb-7 text-center text-white">
+                      {/* Logo Botânico Figo + FIVE FIGS */}
+                      <div className="flex items-center justify-center gap-2.5">
+                        <svg
+                          viewBox="0 0 48 48"
+                          className="h-9 w-9 text-white/90"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                        >
+                          {/* Desenho minimalista do figo e folha igual à imagem de referência */}
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M24 14c-6 5-11 11-11 18a11 11 0 0022 0c0-7-5-13-11-18z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M20 20c-2 4-3 8-2 13M28 20c2 4 3 8 2 13M24 18v18"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M24 14c1-4 4-7 8-7 0 4-3 7-8 7z"
+                          />
+                        </svg>
+                        <span className="text-xl font-light tracking-[0.22em] text-white uppercase">
+                          {blueprint.brandLabel}
+                        </span>
+                      </div>
+
+                      {/* Headline Principal */}
+                      <div className="mt-2.5 font-serif text-[26px] font-semibold tracking-tight text-white">
+                        {customCampaignTitle.trim() || blueprint.heroHeadline}
+                      </div>
+
+                      {/* Subtexto Personalizado com Consumo EPOC do Hóspede */}
+                      <p className="mt-1.5 text-[11px] leading-relaxed text-stone-300">
+                        Exclusivo para <strong className="text-white">{targetedEvaluations[0].guest.name.split(" ")[0]}</strong> ·{" "}
+                        {customIncentive.trim() || blueprint.defaultIncentive} ({targetedEvaluations[0].favoriteEpocItem})
+                      </p>
+
+                      {/* Botão Retangular "RESERVE MY SEAT" Interativo */}
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => handleLaunchCampaign(true)}
+                        className="mt-5 inline-flex items-center justify-center border border-white/80 bg-transparent px-7 py-3 text-[11px] font-semibold tracking-[0.18em] uppercase text-white transition hover:bg-white hover:text-[#262322] disabled:opacity-50"
+                      >
+                        RESERVE MY SEAT
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Preview Compacto do WhatsApp Concierge */}
+                  <div className="rounded-xl border border-[#2e323c] bg-[#14161a] p-3">
+                    <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <span className="flex items-center gap-1 text-[#55b699]">
+                        <MessageSquare className="h-3 w-3" /> Mensagem WhatsApp / SMS Concierge
+                      </span>
+                      <span className="font-mono text-slate-400">
+                        Mesa #{targetedEvaluations[0].recommendedTable}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 rounded-lg bg-[#1c2228] p-2.5 font-sans text-xs leading-relaxed text-slate-200 border-l-2 border-[#55b699]">
+                      “Olá <strong>{targetedEvaluations[0].guest.name.split(" ")[0]}</strong>, você foi convidado para o <strong>{customCampaignTitle.trim() || blueprint.heroHeadline}</strong> no <strong>{db.venue.name}</strong> ({activeSlot.dayLabel} às {activeSlot.timeSlot.split(" - ")[0]}). Reservamos sua <strong>Mesa {targetedEvaluations[0].recommendedTable}</strong> com <em>{customIncentive.trim() || blueprint.defaultIncentive}</em>.”
+                    </div>
                   </div>
                 </div>
               )}
@@ -1121,7 +1276,7 @@ export default function CampaignsAndYieldPanel({
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#55b699] to-[#3ea6d8] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow-lg hover:opacity-95 disabled:opacity-50"
                 >
                   <Send className="h-4 w-4" />
-                  Disparar Campanha &amp; Gerar Reserva de Alta Propensão (+{campaignMetrics.tablesToFill} Mesas)
+                  Disparar Convite &amp; Reservar Assentos (+{campaignMetrics.tablesToFill} Mesas)
                 </button>
 
                 <button
@@ -1131,7 +1286,7 @@ export default function CampaignsAndYieldPanel({
                   className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#3ea6d8]/50 bg-[#3ea6d8]/10 px-4 py-2 text-xs font-bold text-[#7fd3fa] hover:bg-[#3ea6d8]/20 disabled:opacity-50"
                 >
                   <TrendingUp className="h-3.5 w-3.5" />
-                  Apenas Disparar Campanha e Simular Preenchimento no Heatmap
+                  Simular Preenchimento no Heatmap Semanal
                 </button>
               </div>
             </div>
