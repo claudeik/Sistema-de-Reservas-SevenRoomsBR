@@ -9,6 +9,7 @@ import {
   ClipboardList,
   Code2,
   LayoutGrid,
+  Megaphone,
   RefreshCcw,
   Server,
   Settings,
@@ -22,11 +23,13 @@ import FloorplanCanvas from "@/components/FloorplanCanvas";
 import WaitlistAndReservationsPanel from "@/components/WaitlistAndReservationsPanel";
 import CrmWangariPanel from "@/components/CrmWangariPanel";
 import EpocSimulatorAndApiPanel from "@/components/EpocSimulatorAndApiPanel";
+import CampaignsAndYieldPanel from "@/components/CampaignsAndYieldPanel";
 
 type ActiveModuleTab =
   | "FLOORPLAN"
   | "RESERVATIONS_WAITLIST"
   | "CRM_WANGARI"
+  | "CAMPAIGNS_YIELD"
   | "EPOC_SIMULATOR"
   | "QR_AND_API";
 
@@ -130,6 +133,12 @@ export default function ReservationEpocPlatformPage() {
       icon: Users,
     },
     {
+      id: "CAMPAIGNS_YIELD" as const,
+      label: "Campaigns",
+      sub: "Yield & IA",
+      icon: Megaphone,
+    },
+    {
       id: "EPOC_SIMULATOR" as const,
       label: "Servers",
       sub: "PDV EPOC",
@@ -215,6 +224,15 @@ export default function ReservationEpocPlatformPage() {
                 ))}
               </select>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("CAMPAIGNS_YIELD")}
+              className="hidden sm:flex items-center gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold text-amber-300 hover:bg-amber-500/25 transition"
+            >
+              <Megaphone className="h-3.5 w-3.5 text-amber-400" />
+              <span>Baixa Alocação · Criar Campanha IA</span>
+            </button>
           </div>
 
           {/* Navegação Mobile (visível apenas em telas pequenas) */}
@@ -336,6 +354,15 @@ export default function ReservationEpocPlatformPage() {
               selectedGuestId={selectedGuestId}
               onSelectGuest={setSelectedGuestId}
               onAction={handleAction}
+              busy={busy}
+            />
+          )}
+
+          {activeTab === "CAMPAIGNS_YIELD" && (
+            <CampaignsAndYieldPanel
+              db={db}
+              onAction={handleAction}
+              onInspectGuest={handleInspectGuest}
               busy={busy}
             />
           )}
