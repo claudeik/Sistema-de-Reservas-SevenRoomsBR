@@ -1,0 +1,169 @@
+// Prisma Schema — Sistema de Reservas, Fila Virtual, CRM 360º & Integração PDV EPOC
+// Referência: Especificação de Produto v1 (Out/2026)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  venues    Venue[]
+  createdAt DateTime @default(now())
+}
+
+model Venue {
+  id                   String        @id @default(cuid())
+  brandId              String
+  brand                Brand         @relation(fields: [brandId], references: [id])
+  name                 String        // Ex.: Night Beach Club - Vila Mariana
+  slug                 String        @unique
+  city                 String
+  toleranceMinutes     Int           @default(15)
+  overbookingPercent   Int           @default(10)
+  maxNoShowBeforeBlock Int           @default(3)
+  areas                Area[]
+  reservations         Reservation[]
+  waitlistEntries      WaitlistEntry[]
+  qrCodes              QrCodeToken[]
+}
+
+model Area {
+  id           String   @id @default(cuid())
+  venueId      String
+  venue        Venue    @relation(fields: [venueId], references: [id])
+  epocAreaId   String   // ID mapeado no PDV EPOC
+  name         String   // Salão Principal, Varanda Social, Lounge 88, Terraço Sunset, Mezanino
+  maxCapacity  Int
+  widthMeters  Float    @default(16)
+  heightMeters Float    @default(10)
+  bgImageUrl   String?
+  tables       TableNode[]
+}
+
+model TableNode {
+  id              String   @id @default(cuid())
+  areaId          String
+  area            Area     @relation(fields: [areaId], references: [id])
+  epocTableId     String   // ID mapeado no PDV EPOC
+  number          String   // Ex.: "01", "11", "11/04"
+  name            String
+  minCapacity     Int
+  maxCapacity     Int
+  shape           String   // "square" | "round" | "rectangle" | "booth" | "stool"
+  x               Float    // Posição X em metros / %
+  y               Float    // Posição Y em metros / %
+  width           Float
+  height          Float
+  rotation        Int      @default(0)
+  isLocked        Boolean  @default(false)
+  lockReason      String?
+  mergedWithIds   String?  // JSON array de mesas unidas (ex: ["table-11", "table-04"])
+  epocStatus      String   @default("FREE") // FREE | OPEN | CLOSING | BLOCKED | STALE
+  currentOrderId  String?
+  seatedAt        DateTime?
+  expectedFreeAt  DateTime?
+}
+
+model Guest {
+  id                    String   @id @default(cuid())
+  cpf                   String   @unique // Criptografado em repouso, mascarado na UI
+  cpfHash               String   @unique
+  name                  String
+  phone                 String
+  email                 String?
+  phoneVerified         Boolean  @default(false)
+  // Consentimentos LGPD granulares
+  consentService        Boolean  @default(true)
+  consentMarketing      Boolean  @default(false)
+  consentEnrichment     Boolean  @default(false)
+  consentDietaryHealth  Boolean  @default(false)
+  consentUpdatedAt      DateTime @default(now())
+  // Métricas CRM & RFV
+  visitsCount           Int      @default(0)
+  noShowCount           Int      @default(0)
+  cancellationsCount    Int      @default(0)
+  averageTicket         Float    @default(0)
+  totalSpent            Float    @default(0)
+  lastVisitAt           DateTime?
+  // Preferências & IA Garçom
+  winePreference        String?  // Ex.: "Tinto Encorpado (Premium R$ 450+)"
+  dietaryRestrictions   String?  // Ex.: "Alergia severa a crustáceos / Sem glúten"
+  preferredArea         String?
+  favoriteDishes        String?
+  tags                  String   // JSON array: ["VIP", "Ticket Alto", "Amante de Vinhos"]
+  // Enriquecimento Wangari Data Hub + SalesBox (11 APIs)
+  enrichmentStatus      String   @default("PENDING") // PENDING | ENRICHED | BLOCKED_LGPD
+  enrichedAt            DateTime?
+  salesBoxJson          String?  // Atributos detalhados das 11 APIs SalesBox com data por campo
+  marketingCluster      String?  // Ex.: "Premium frequente"
+  reservations          Reservation[]
+  waitlistEntries       WaitlistEntry[]
+}
+
+model Reservation {
+  id              String   @id @default(cuid())
+  venueId         String
+  venue           Venue    @relation(fields: [venueId], references: [id])
+  guestId         String
+  guest           Guest    @relation(fields: [guestId], references: [id])
+  date            String   // YYYY-MM-DD
+  time            String   // HH:mm
+  shift           String   // "ALMOÇO" | "JANTAR" | "SHOW"
+  partySize       Int
+  areaId          String
+  tableId         String?
+  status          String   // REQUESTED | CONFIRMED | RECONFIRMED | ARRIVED | SEATED | FINISHED | CANCELLED | NO_SHOW | EXPIRED
+  origin          String   // APP | QR | SITE | LINKBIO | BALCAO | TELEFONE | WHATSAPP | API_PARTNER
+  isManual        Boolean  @default(false)
+  notes           String?
+  tags            String   // JSON array: ["Aniversário", "Alergia", "VIP", "Cadeira de Bebê"]
+  depositStatus   String   @default("NONE") // NONE | AUTHORIZED | PAID | REFUNDED
+  depositAmount   Float    @default(0)
+  qrVoucherToken  String   @unique
+  qrUsedAt        DateTime?
+  idempotencyKey  String?  @unique
+  epocOrderId     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model WaitlistEntry {
+  id                  String   @id @default(cuid())
+  venueId             String
+  venue               Venue    @relation(fields: [venueId], references: [id])
+  guestId             String
+  guest               Guest    @relation(fields: [guestId], references: [id])
+  partySize           Int
+  sizeBracket         String   // "1-2" | "2-4" | "5-10" | "12+"
+  preferredAreaId     String?
+  needsAccessibility  Boolean  @default(false)
+  isPriorityVip       Boolean  @default(false)
+  priorityReason      String?
+  status              String   // WAITING | CALLED | SEATED | ABANDONED | NO_RESPONSE | REMOVED
+  origin              String   // QR_PORTA | SUPERAPP | HOST
+  estimatedWaitMins   Int
+  calledAt            DateTime?
+  responseDeadlineAt  DateTime?
+  seatedTableId       String?
+  createdAt           DateTime @default(now())
+}
+
+model QrCodeToken {
+  id          String   @id @default(cuid())
+  venueId     String
+  venue       Venue    @relation(fields: [venueId], references: [id])
+  type        String   // VENUE | WAITLIST | RESERVATION_VOUCHER | EVENT_LIST | TABLE
+  label       String
+  utmSource   String
+  shortUrl    String
+  scansCount  Int      @default(0)
+  conversions Int      @default(0)
+  createdAt   DateTime @default(now())
+}
