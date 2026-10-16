@@ -23,27 +23,41 @@ import {
 } from "./cpf-utils";
 import { createInitialSeedState } from "./seed-data";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const IS_VERCEL = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const DATA_DIR = IS_VERCEL ? "/tmp" : path.join(process.cwd(), "data");
 const DB_FILE = path.join(DATA_DIR, "reservation-epoc-db.json");
 
+declare global {
+  var __reservationEpocDb: DatabaseState | undefined;
+}
+
 export function getDatabase(): DatabaseState {
+  if (globalThis.__reservationEpocDb) {
+    return globalThis.__reservationEpocDb;
+  }
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
     if (!fs.existsSync(DB_FILE)) {
       const initial = createInitialSeedState();
+      globalThis.__reservationEpocDb = initial;
       fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2), "utf-8");
       return initial;
     }
     const raw = fs.readFileSync(DB_FILE, "utf-8");
-    return JSON.parse(raw) as DatabaseState;
+    const parsed = JSON.parse(raw) as DatabaseState;
+    globalThis.__reservationEpocDb = parsed;
+    return parsed;
   } catch {
-    return createInitialSeedState();
+    const fallback = createInitialSeedState();
+    globalThis.__reservationEpocDb = fallback;
+    return fallback;
   }
 }
 
 export function saveDatabase(state: DatabaseState): DatabaseState {
+  globalThis.__reservationEpocDb = state;
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
